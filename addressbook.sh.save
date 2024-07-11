@@ -10,7 +10,7 @@ do
 	printf "\nEnter your selection: "
 	read VAR_INPUT
 	case $VAR_INPUT in 
-		1) printf "Searching:\n\n"
+		1) echo -n "Searching:\n\n"
 			CSV_FILE="/home/clement/Downloads/contacts.csv"
 
 			if [ ! -f "$CSV_FILE" ]; then
