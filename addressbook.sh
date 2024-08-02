@@ -11,10 +11,10 @@ do
 	read VAR_INPUT
 	case $VAR_INPUT in 
 		1) printf "Searching:\n\n"
-			CSV_FILE="/home/clement/Downloads/contacts.csv"
+			CONTACT="/home/clement/Downloads/contacts.csv"
 
-			if [ ! -f "$CSV_FILE" ]; then
-				echo "Error: CSV File '$CSV_FILE' not found"
+			if [ ! -f "$CONTACT" ]; then
+				echo "Error: CSV File '$CONTACT' not found"
 				exit 1
 			fi
 			#delimiter: ,
@@ -25,7 +25,7 @@ do
 	  			printf "Address: %-20s\n" "$address"
 	  			printf "City: %-10s County: %-10s State: %-2s Area Code: %-5s\n" "$city" "$county" "$state" "$acode"
 	  			printf "Phone Number: %-13s Email: %-15s\n\n" "$pnumber" "$email" 
-			done < "$CSV_FILE"
+			done < "$CONTACT"
 			IFS=$'\n'
 			echo "Process Finished."
 			;;
