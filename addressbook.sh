@@ -20,25 +20,82 @@ do_list() {
 }
 
 do_search() {
-	# first name is always after id, so we traverse the csv until the first name and backtrack to id
+	# given some input firstname, scan the csv until i find the matching row and print it. 
 	CONTACT="/home/clement/Downloads/contacts.csv"
-	printf "What is the first name of the person you are searching for?\n"
-	found=0
+	printf "\nWhat is the first name of the person you are searching for?\n"
 	read firstNameInput
-	awk -F',' -v search="$firstNameInput" '$1 == search {print; found=1; exit}'$CONTACT
-	if [ $found = 0 ]; then
+
+	found=0
+	cat "$CONTACT" | awk -F',' -v search="$firstNameInput" '$1 == search {print; found=1; exit}'
+	if [ "$found" = 0 ]; then
 		echo "Error: Name not found"
 	fi
 }
 
 do_add(){
 	# no duplicate checking implementation since we could have two identical entries separated by id #
-	do_search
+	CONTACT="/home/clement/Downloads/contacts.csv"
+	printf "Please print the first name of your student:\n"
+	read firstName
+	printf "Please print the middle  name of your student:\n"
+	read middleName
+	printf "Please print the last  name of your student:\n"
+	read lastName
+	printf "Please print the address of your student:\n"
+	read address
+	printf "Please print the city that your student resides in: \n"
+	read city
+	printf "Please print the state that your student resides in: \n"
+	read state
+	printf "Please print the zip code that your student resides in: \n"
+	read zip
+	printf "Please print your student's phone number:\n"
+	read phone
+	printf "Please print your student's email: \n"
+	read email
+	sed -i li"$firstName, $middleName, $lastName, $address, $city, $state, $zip, $phone, $email" "$CONTACT"
+}
+
+do_edit() {
+	CONTACT="/home/clement/Downloads/contacts.csv"
+	clear
+	printf "What would you like to edit about this student?"
+	printf "1. First Name\n"
+	printf "2. Middle Name\n"
+	printf "3. Last Name\n"
+	printf "4. Address\n"
+	printf "5. City\n"
+	printf "6. State\n"
+	printf "7. Zip\n"
+	printf "8. Phone Number\n"
+	printf "9. Email\n"
+
+	read CSV_OPTIONS
+	case $CSV_OPTIONS in
+		1) 
+		  ;;
+		2)
+		  ;;
+		3)
+		  ;;
+		4)
+		  ;;
+		5)
+		  ;;
+		6)
+		  ;;
+		7)
+		  ;;
+		8)
+		  ;;
+		9)
+		  ;; 
+	esac
 }
 
 do_remove() {
 	echo -n "Removing File..."
-        rm -f "/home/clement/Downloads/contacts.csv" 
+        rm -f "/home/clement/Downloads/contacts.csv"
 }
 
 
@@ -58,15 +115,16 @@ do
 		   printf "1. List\n"
 		   printf "2. Search\n"
 		   read ES_INPUT
-		   if [ "$ES_INPUT" == "1" ]; then
-			do_list
-		   else
-			do_search
-		   fi 
+		   case $ES_INPUT in
+			1) do_list
+			   ;;
+			2) do_search
+			  ;;
+		  esac 
 		   ;;
-		2) echo -n "In Development: Feature Not Required in Lab 5"
+		2) do_add
 		   ;;
-		3) echo -n "In  Development: Feature Not Required in Lab 5"
+		3) do_edit
 		   ;;
 		4) do_remove
 		   ;;
