@@ -1,6 +1,6 @@
 do_list() {
 	printf "Searching:\n\n"
-	CONTACT="/home/clement/Downloads/contacts.csv"
+	CONTACT="/$HOME/Downloads/contacts.csv"
         if [ ! -f "$CONTACT" ]; then
         	echo "Error: CSV File '$CONTACT' not found"
                 sleep 1
@@ -21,7 +21,7 @@ do_list() {
 
 do_search() {
 	# given some input firstname, scan the csv until i find the matching row and print it. 
-	CONTACT="/home/clement/Downloads/contacts.csv"
+	CONTACT="/$HOME/Downloads/contacts.csv"
 	if [ ! -f "$CONTACT" ]; then
                 echo "Error: CSV File '$CONTACT' not found"
                 sleep 1
@@ -52,7 +52,7 @@ do_search() {
 
 do_add(){
 	# no duplicate checking implementation since we could have two identical entries separated by id #
-	CONTACT="/home/clement/Downloads/contacts.csv"
+	CONTACT="/$HOME/Downloads/contacts.csv"
 	if [ ! -f "$CONTACT" ]; then
                 echo "Error: CSV File '$CONTACT' not found"
                 sleep 1
@@ -94,7 +94,7 @@ do_add(){
 }
 
 do_edit() {
-	CONTACT="/home/clement/Downloads/contacts.csv"
+	CONTACT="/$HOME/Downloads/contacts.csv"
 	if [ ! -f "$CONTACT" ]; then
                 echo "Error: CSV File '$CONTACT' not found"
                 sleep 1
@@ -106,7 +106,7 @@ do_edit() {
 
         found=0
 
-        while IFS=, read -r id firstName middleName lastName address city state>
+        while IFS=, read -r id firstName middleName lastName address city state
         do
                 if [[ "$firstName" == "$firstNameInput" ]];
                 then
@@ -134,15 +134,15 @@ do_edit() {
 
 do_remove() {
 	printf "Searching:\n\n"
-        CONTACT="/Downloads/contacts.csv"
+        CONTACT="$HOME/Downloads/contacts.csv"
         if [ ! -f "$CONTACT" ]; then
                 echo "Error: CSV File '$CONTACT' not found"
                 sleep 1
                 exit 1
         fi
 	echo -n "Removing File..."
-        rm -f "/home/clement/Downloads/contacts.csv"
-	echo -n "File Removed! Please re-instate .csv file if you plan to use this program."
+        rm -f "/$HOME/Downloads/contacts.csv"
+	echo -n "File Removed! \nPlease re-instate .csv file if you plan to use this program."
 }
 
 
