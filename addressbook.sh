@@ -44,10 +44,10 @@ do_search() {
 		fi
 	done < "$CONTACT"
 
-		if [[ $found -eq 0 ]];
-		then
-			echo "Name not found"
-		fi
+	if [[ $found -eq 0 ]];
+	then
+		echo "Name not found"
+	fi
 }
 
 do_add(){
@@ -101,43 +101,40 @@ do_edit() {
                 exit 1
         fi
 	clear
-	printf "What would you like to edit about this student?"
-	printf "1. First Name\n"
-	printf "2. Middle Name\n"
-	printf "3. Last Name\n"
-	printf "4. Address\n"
-	printf "5. City\n"
-	printf "6. State\n"
-	printf "7. Zip\n"
-	printf "8. Phone Number\n"
-	printf "9. Email\n"
+	printf "\nWhat is the first name of the person you are searching for?\n"
+        read firstNameInput
 
-	read CSV_OPTIONS
-	case $CSV_OPTIONS in
-		1)
-		  ;;
-		2)
-		  ;;
-		3)
-		  ;;
-		4)
-		  ;;
-		5)
-		  ;;
-		6)
-		  ;;
-		7)
-		  ;;
-		8)
-		  ;;
-		9)
-		  ;;
-	esac
+        found=0
+
+        while IFS=, read -r id firstName middleName lastName address city state>
+        do
+                if [[ "$firstName" == "$firstNameInput" ]];
+                then
+                        printf "Student found! \n"
+			printf "What would you like to edit about this student?"
+			printf "1. First Name\n"
+        		printf "2. Middle Name\n"
+        		printf "3. Last Name\n"
+        		printf "4. Address\n"
+        		printf "5. City\n"
+        		printf "6. State\n"
+        		printf "7. Zip\n"
+        		printf "8. Phone Number\n"
+        		printf "9. Email\n"
+                        found=1
+                        break
+                fi
+        done < "$CONTACT"
+
+	if [[ $found -eq 0 ]];
+        then
+                echo "Name not found"
+        fi
 }
 
 do_remove() {
 	printf "Searching:\n\n"
-        CONTACT="/home/clement/Downloads/contacts.csv"
+        CONTACT="/Downloads/contacts.csv"
         if [ ! -f "$CONTACT" ]; then
                 echo "Error: CSV File '$CONTACT' not found"
                 sleep 1
