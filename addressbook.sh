@@ -85,8 +85,8 @@ do_add(){
 	printf "Please print your student's email: \n"
 	read email
 
-
 	printf "Created!\n"
+
 	new_record="$id,$firstName,$middleName,$lastName,$address,$city,$state,$zip,$phone,$email\n"
 	echo "$new_record" >> "$tmpfile"
 	tail -n +2 "$CONTACT" >> "$tmpfile"
@@ -111,17 +111,17 @@ do_edit() {
                 if [[ "$firstName" == "$firstNameInput" ]];
                 then
                         printf "Student found! \n"
-			printf "What would you like to edit about this student?"
-			printf "1. First Name\n"
-        		printf "2. Middle Name\n"
-        		printf "3. Last Name\n"
-        		printf "4. Address\n"
-        		printf "5. City\n"
-        		printf "6. State\n"
-        		printf "7. Zip\n"
-        		printf "8. Phone Number\n"
-        		printf "9. Email\n"
+			printf "Please update the student by inputting all values separated by commas\n"
+			printf "Format: ID, First Name, Middle Name, Last Name, Address, City, State, Zip, Phone, Email"
+			read new_data
+
+			IFS=, read -r new_id, new_firstName, new_middleName, new_lastName, new_address, new_city, new_state, new_zip, new_phone, new_email <<< "$new_data"
+			tempfile=$(mktemp)
+			sed "s/$id,$firstName,$middleName,$lastName,$address,$city,$state,$zip,$phone,$email/$new_id,$new_firstName,$new_middleName,$new_lastName,$new_address,$new_city,$new_state,$new_zip,$new_phone,$new_email/" "$CONTACT" > "$tempfile"
+			mv "$tempfile" "$CONTACT"
+
                         found=1
+			printf "Updated!\n Please use the list command (1) to see the new changes"
                         break
                 fi
         done < "$CONTACT"
