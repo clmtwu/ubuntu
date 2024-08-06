@@ -97,20 +97,29 @@ do_edit() {
 	CONTACT="/$HOME/Downloads/contacts.csv"
 	if [ ! -f "$CONTACT" ]; then
                 echo "Error: CSV File '$CONTACT' not found"
-                sleep 1
+                		sleep 1
                 exit 1
-        fi
+    fi
 
 	read -p "Enter the first name of the student to search for: " firstNameInput
 
-        mapfile -t lines < "$CONTACT"
+	while read id firstName lastName address city county state zip  phone email 
+        do
+		if [[ ! "$firstName" == "$firstNameInput" ]];
+		then
+			echo "Error: Student not found"
+			exit 1
+		fi
+		done
+
+    mapfile -t lines < "$CONTACT"
 
 	for ((i=1; i<=${#lines[@]}; i++));
 	do
-        	IFS=, read -r id firstName middleName lastName address city state zip phone email
-                if [[ "$firstName" == "$firstNameInput" ]];
-                then
-                        printf "Student found!\n"
+		IFS=, read -r id firstName middleName lastName address city state zip phone email
+		if [[ "$firstName" == "$firstNameInput" ]];
+		then
+			printf "Student found!\n"
 			printf "What would you like to change about the student?\n"
 			printf "1. ID\n"
 			printf "2. First Name\n"
@@ -127,40 +136,41 @@ do_edit() {
 
 			case $choice in
 				1)read -p "New ID: " n_id
-				  lines[$i]="${n_id},${firstName},${middleName},${lastName},${address},${city},${state},${zip},${phone},${email}"
-				  ;;
+					lines[$i]="${n_id},${firstName},${middleName},${lastName},${address},${city},${state},${zip},${phone},${email}"
+					;;
 				2)read -p "New First Name: " nfn
-				  lines[$i]="${id},${nfn},${middleName},${lastName},${address},${city},${state},${zip},${phone},${email}"
-				  ;;
+					lines[$i]="${id},${nfn},${middleName},${lastName},${address},${city},${state},${zip},${phone},${email}"
+					;;
 				3)read -p "New Middle Name:" nmn
-				  lines[$i]="${id},${firstName},${nmn},${lastName},${address},${city},${state},${zip},${phone},${email}"
-				  ;;
+					lines[$i]="${id},${firstName},${nmn},${lastName},${address},${city},${state},${zip},${phone},${email}"
+					;;
 				4)read -p "New Last Name: " nln
-				  lines[$i]="${id},${firstName},${middleName},${nln},${address},${city},${state},${zip},${phone},${email}"
-				  ;;
+					lines[$i]="${id},${firstName},${middleName},${nln},${address},${city},${state},${zip},${phone},${email}"
+					;;
 				5)read -p "New Address: " new_address
-				  lines[$i]="${id},${firstName},${middleName},${lastName},${new_address},${city},${state},${zip},${phone},${email}" 
-				  ;;
+					lines[$i]="${id},${firstName},${middleName},${lastName},${new_address},${city},${state},${zip},${phone},${email}" 
+					;;
 				6)read -p "New City: " new_city
-			 	  lines[$i]="${id},${firstName},${middleName},${lastName},${address},${new_city},${state},${zip},${phone},${email}"
-				  ;;
+					lines[$i]="${id},${firstName},${middleName},${lastName},${address},${new_city},${state},${zip},${phone},${email}"
+					;;
 				7)read -p "New State: " new_state
-				  lines[$i]="${id},${firstName},${middleName},${lastName},${address},${city},${new_state},${zip},${phone},${email}"
-				  ;;
+					lines[$i]="${id},${firstName},${middleName},${lastName},${address},${city},${new_state},${zip},${phone},${email}"
+					;;
 				8)read -p "New Zip: " new_zip
-				  lines[$i]="${id},${firstName},${middleName},${lastName},${address},${city},${state},${new_zip},${phone},${email}"
-				  ;;
+					lines[$i]="${id},${firstName},${middleName},${lastName},${address},${city},${state},${new_zip},${phone},${email}"
+					;;
 				9)read -p "New Phone: " new_phone
-				  lines[$i]="${id},${firstName},${middleName},${lastName},${address},${city},${state},${zip},${new_phone},${email}"
-				  ;;
+					lines[$i]="${id},${firstName},${middleName},${lastName},${address},${city},${state},${zip},${new_phone},${email}"
+					;;
 				10)read -p "New Email: " new_email
-				  lines[$i]="${id},${firstName},${middleName},${lastName},${address},${city},${state},${zip},${phone},${new_email}"
-				  ;;
+					lines[$i]="${id},${firstName},${middleName},${lastName},${address},${city},${state},${zip},${phone},${new_email}"
+					;;
 				*)break
-				  ;;
+					;;
 			esac
-			printf "%s\n" "${lines[@]}" > "$CONTACT"
-                fi
+		printf "%s\n" "${lines[@]}" > "$CONTACT"
+		fi
+	done
 }
 
 do_remove() {
