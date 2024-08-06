@@ -105,26 +105,64 @@ do_edit() {
         read firstNameInput
 
         found=0
-
+	line=$(awk -F, -v name="$firstNameInput" '$2 == name {print NR}' "$CONTACT")
         while IFS=, read -r id firstName middleName lastName address city state
         do
                 if [[ "$firstName" == "$firstNameInput" ]];
                 then
-                        printf "Student found! \n"
-			printf "Please update the student by inputting all values separated by commas\n"
-			printf "Format: ID, First Name, Middle Name, Last Name, Address, City, State, Zip, Phone, Email"
+                        printf "Student found!\n"
+
+			clear
+			printf "What would you like to change about the student?\n"
+			printf "1. ID\n"
+			printf "2. First Name\n"
+			printf "3. Middle Name\n"
+			printf "4. Last Name\n"
+			printf "5. Address\n"
+			printf "6. City\n"
+			printf "7. State\n"
+			printf "8. Zip\n"
+			printf "9. Phone"
+			printf "10. Email"
+			printf "11. Quit"
 			read new_data
 
-			IFS=, read -r new_id, new_firstName, new_middleName, new_lastName, new_address, new_city, new_state, new_zip, new_phone, new_email <<< "$new_data"
-			tempfile=$(mktemp)
-			sed "s/$id,$firstName,$middleName,$lastName,$address,$city,$state,$zip,$phone,$email/$new_id,$new_firstName,$new_middleName,$new_lastName,$new_address,$new_city,$new_state,$new_zip,$new_phone,$new_email/" "$CONTACT" > "$tempfile"
-			mv "$tempfile" "$CONTACT"
+			clear
+			printf "What would you like to change it to be?"
+			read change
+
+			case $new_data in
+				1)id="$change"
+				  ;;
+				2)firstName="$change"
+				  ;;
+				3)middleName="$change"
+				  ;;
+				4)lastName="$change"
+				  ;;
+				5)address="$change"
+				  ;;
+				6)city="$change"
+				  ;;
+				7)state="$change"
+				  ;;
+				8)zip="$change"
+				  ;;
+				9)phone="$change"
+				  ;;
+				10)email="$change"
+				  ;;
+				*)break
+				  ;;
+			esac
+
+			sed -i "${line}d" "$CONTACT"
+			echo "$id,$firstName,$middleName,$lastName,$address,$city,$state,$zip,$phone,$email"
 
                         found=1
-			printf "Updated!\n Please use the list command (1) to see the new changes"
+			printf "Updated!\n Please use the list command (1, 1) to see the new changes" << "$CONTACT"
                         break
                 fi
-        done < "$CONTACT"
 
 	if [[ $found -eq 0 ]];
         then
@@ -142,19 +180,18 @@ do_remove() {
         fi
 	echo -n "Removing File..."
         rm -f "/$HOME/Downloads/contacts.csv"
-	echo -n "File Removed! \nPlease re-instate .csv file if you plan to use this program."
+	echo -n "File Removed! \nPlease re-instate the .csv file if you plan to continue using this program."
 }
 
 
 printf "%s" "-- Address Book --"
-printf "\n1. List / Search\n"
-printf "2. Add\n"
-printf "3. Edit\n"
-printf "4. Remove\n"
-printf "5. Quit\n"
-
 while :
 do
+	printf "\n1. List / Search\n"
+	printf "2. Add\n"
+	printf "3. Edit\n"
+	printf "4. Remove\n"
+	printf "5. Quit\n"
 	printf "\nEnter your Address Book selection: "
 	read VAR_INPUT
 	case $VAR_INPUT in
