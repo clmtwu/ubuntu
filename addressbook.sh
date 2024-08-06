@@ -138,12 +138,12 @@ do_edit() {
 		line_count=0
 		while IFS='' read -r line; do
 		((line_count++))
-		if [[ $line_count != $line_number_to_delete ]]; then
+		if [[ $line_count != $linenumber ]]; then
 			echo "$line" >> "$temp_file"
 		fi
-		done < "$csv_file"
+		done < "$CONTACT"
 
-		mv "$temp_file" "$csv_file"
+		mv "$temp_file" "$CONTACT"
 		do_add
 	fi
 }
