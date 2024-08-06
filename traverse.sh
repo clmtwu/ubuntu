@@ -2,7 +2,7 @@ doindent() {
   # Do a small indent depending on how deep into the tree we are
   # using echo "\c" instead of echo en " " since I am using ubuntu
   for i in $(seq 1 "$1"); do
-    echo "\c "
+    echo "\c"
   done
 }
 
