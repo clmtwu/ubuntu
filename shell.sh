@@ -1,2 +1,1 @@
-pid=$PPID
-echo $line | cut --delimiter=" " --fields=4
+echo $(ps | grep $PPID) | cut --delimiter=" " --fields=4
