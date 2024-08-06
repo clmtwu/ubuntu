@@ -1,6 +1,5 @@
 doindent() {
   # Do a small indent depending on how deep into the tree we are
-  # using echo "\c" instead of echo en " " since I am using ubuntu
   for i in $(seq 1 "$1"); do
     echo -en " "
   done
@@ -12,14 +11,15 @@ traverse() {
 
   # "Rewrite below... using the for-loop."
   # Traverse a directory
-  for item in "$1"/*; do
+  for i in "$1"/*; do
+    # My implementation uses recursion to stay within the directory
+    # Hence why indent is localized
     doindent "$indent"
-    if [ -d "$item" ]; then
-      echo "Directory: $item"
-      # Use recursion within the loop for subdirectories
-      traverse "$item" "$(expr "$indent" + 1)"
+    if [ -d "$i" ]; then
+      echo "Directory: $i"
+      traverse "$i" "$(expr "$indent" + 1)"
     else
-      echo "File: $1/$item"  # Use full path for clarity
+      echo "File: $1/$i"
     fi
   done
 }
