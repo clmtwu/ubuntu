@@ -94,32 +94,32 @@ do_add(){
 }
 
 do_edit() {
-	CONTACT="/$HOME/Downloads/contacts.csv"
-	if [ ! -f "$CONTACT" ]; then
+
+    CONTACT="/$HOME/Downloads/contacts.csv"
+
+    if [ ! -f "$CONTACT" ]; then
+
                 echo "Error: CSV File '$CONTACT' not found"
-                		sleep 1
+
+                sleep 1
+
                 exit 1
-    fi
 
-	read -p "Enter the first name of the student to search for: " firstNameInput
+        fi
 
-	while read id firstName lastName address city county state zip  phone email 
-        do
-		if [[ ! "$firstName" == "$firstNameInput" ]];
-		then
-			echo "Error: Student not found"
-			exit 1
-		fi
-		done
+    clear
 
-    mapfile -t lines < "$CONTACT"
+    printf "\nWhat is the first name of the person you are searching for?\n"
+    read firstNameInput
+    found=0
 
-	for ((i=1; i<=${#lines[@]}; i++));
+    line=$(awk -F, -v name="$firstNameInput" '$2 == name {print NR}' "$CONTACT")
+	while IFS=, read -r id firstName middleName lastName address city state
 	do
-		IFS=, read -r id firstName middleName lastName address city state zip phone email
 		if [[ "$firstName" == "$firstNameInput" ]];
 		then
 			printf "Student found!\n"
+			found=1
 			printf "What would you like to change about the student?\n"
 			printf "1. ID\n"
 			printf "2. First Name\n"
@@ -129,49 +129,49 @@ do_edit() {
 			printf "6. City\n"
 			printf "7. State\n"
 			printf "8. Zip\n"
-			printf "9. Phone\n"
-			printf "10. Email\n"
-			printf "11. Quit\n"
-			read choice
+			printf "9. Phone"
+			printf "10. Email"
+			printf "11. Quit"
+			read new_data
+			clear
 
-			case $choice in
-				1)read -p "New ID: " n_id
-					lines[$i]="${n_id},${firstName},${middleName},${lastName},${address},${city},${state},${zip},${phone},${email}"
+			printf "What would you like to change it to be?"
+			read change
+			case $new_data in
+				1)id="$change"
 					;;
-				2)read -p "New First Name: " nfn
-					lines[$i]="${id},${nfn},${middleName},${lastName},${address},${city},${state},${zip},${phone},${email}"
+				2)firstName="$change"
 					;;
-				3)read -p "New Middle Name:" nmn
-					lines[$i]="${id},${firstName},${nmn},${lastName},${address},${city},${state},${zip},${phone},${email}"
+				3)middleName="$change"
 					;;
-				4)read -p "New Last Name: " nln
-					lines[$i]="${id},${firstName},${middleName},${nln},${address},${city},${state},${zip},${phone},${email}"
+				4)lastName="$change"
 					;;
-				5)read -p "New Address: " new_address
-					lines[$i]="${id},${firstName},${middleName},${lastName},${new_address},${city},${state},${zip},${phone},${email}" 
+				5)address="$change"
 					;;
-				6)read -p "New City: " new_city
-					lines[$i]="${id},${firstName},${middleName},${lastName},${address},${new_city},${state},${zip},${phone},${email}"
+				6)city="$change"
 					;;
-				7)read -p "New State: " new_state
-					lines[$i]="${id},${firstName},${middleName},${lastName},${address},${city},${new_state},${zip},${phone},${email}"
+				7)state="$change"
+				;;
+				8)zip="$change"
 					;;
-				8)read -p "New Zip: " new_zip
-					lines[$i]="${id},${firstName},${middleName},${lastName},${address},${city},${state},${new_zip},${phone},${email}"
+				9)phone="$change"
 					;;
-				9)read -p "New Phone: " new_phone
-					lines[$i]="${id},${firstName},${middleName},${lastName},${address},${city},${state},${zip},${new_phone},${email}"
-					;;
-				10)read -p "New Email: " new_email
-					lines[$i]="${id},${firstName},${middleName},${lastName},${address},${city},${state},${zip},${phone},${new_email}"
+				10)email="$change"
 					;;
 				*)break
 					;;
 			esac
-		printf "%s\n" "${lines[@]}" > "$CONTACT"
-		fi
+			sed -i "${line}d" "$CONTACT"
+			echo "$id,$firstName,$middleName,$lastName,$address,$city,$state,$zip,$phone,$email" >> "$CONTACT"
+			printf "Updated!\n Please use the list command (1, 1) to see the new changes"
+		fi    
 	done
+	if [[ $found -eq 0 ]]; 
+	then
+		echo "Name not found"
+	fi
 }
+
 
 do_remove() {
 	printf "Searching:\n\n"
