@@ -1,7 +1,6 @@
 
 doindent() {
   # Do a small indent depending on how deep into the tree we are
- -en " "
   for i in $(seq 1 "$1"); do
     echo "\c "
   done
