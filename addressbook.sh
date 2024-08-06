@@ -1,5 +1,5 @@
 do_list() {
-	printf "Searching:\n\n"
+	printf "\nSearching:\n\n"
 	CONTACT="/$HOME/Downloads/contacts.csv"
 
 	if [ ! -f "$CONTACT" ]; then
@@ -27,6 +27,7 @@ do_list() {
 
 	IFS=$'\n'
 	echo "Process Finished."
+	sleep 1
 }
 
 do_search() {
@@ -57,6 +58,7 @@ do_search() {
 	if [[ $found -eq 0 ]]; then
 		echo "Name not found"
 	fi
+	sleep 1
 }
 
 do_add(){
@@ -102,6 +104,7 @@ do_add(){
 	mv "$tmpfile" "$CONTACT"
 
 	printf "Created!\n"
+	sleep 1
 }
 
 do_edit() {
@@ -146,6 +149,7 @@ do_edit() {
 		mv "$temp_file" "$CONTACT"
 		do_add
 	fi
+	sleep 1
 }
 
 
