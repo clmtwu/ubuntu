@@ -1,32 +1,43 @@
 do_list() {
 	printf "Searching:\n\n"
 	CONTACT="/$HOME/Downloads/contacts.csv"
-        if [ ! -f "$CONTACT" ]; then
-        	echo "Error: CSV File '$CONTACT' not found"
-                sleep 1
-                exit 1
-        fi
-        #delimiter: ,
-        IFS=','
-        while read id firstName lastName address city county state zip  phone email 
-        do
-                printf "ID: %-2s Name: %-10s %-10s" "$id" "$firstName" "$lastName"
-                printf "Address: %-20s\n" "$address"
-                printf "City: %-10s County: %-10s State: %-2s Area Code: %-5s\n" "$city" "$county" "$state" "$zip"
-                printf "Phone Number: %-13s Email: %-15s\n\n" "$phone" "$email" 
+
+	if [ ! -f "$CONTACT" ]; then
+		echo "Error: CSV File '$CONTACT' not found"
+		sleep 1
+		exit 1
+	fi
+
+	# delimiter: ,
+	# it doesn't really make sense for the delimiter to be a : since the original .csv file uses commas itself
+	# furthermore, within the addresses themselves, there are commas that are treated as bash as other variables (rightfully so)
+	# it is far better to use perl to refactor everything in this script, but since Lab 6 must be a continuation of Lab 5 this cannot be done.
+	# technical debt aside, it makes little sense to combine both .csv formats with the student formats since we get stuck in a local minima where nothing gets done
+	# ideally, I would be able to create my own file to format everything the way I want to so I could avoid all of this mess, but here we are.
+
+	IFS=','
+
+	while read id firstName lastName address city county state zip  phone email 
+	do
+		printf "ID: %-2s Name: %-10s %-10s" "$id" "$firstName" "$lastName"
+		printf "Address: %-20s\n" "$address"
+		printf "City: %-10s County: %-10s State: %-2s Area Code: %-5s\n" "$city" "$county" "$state" "$zip"
+		printf "Phone Number: %-13s Email: %-15s\n\n" "$phone" "$email" 
 	done < "$CONTACT"
-        IFS=$'\n'
+
+	IFS=$'\n'
 	echo "Process Finished."
 }
 
 do_search() {
-	# given some input firstname, scan the csv until i find the matching row and print it. 
+	# given some input firstname, scan the csv until I find the matching row and print it. 
 	CONTACT="/$HOME/Downloads/contacts.csv"
+
 	if [ ! -f "$CONTACT" ]; then
-                echo "Error: CSV File '$CONTACT' not found"
-                sleep 1
-                exit 1
-        fi
+		echo "Error: CSV File '$CONTACT' not found"
+		sleep 1
+		exit 1
+	fi
 
 	printf "\nWhat is the first name of the person you are searching for?\n"
 	read firstNameInput
@@ -35,8 +46,7 @@ do_search() {
 
 	while IFS=, read -r id firstName middleName lastName address city state zip phone email
 	do
-		if [[ "$firstName" == "$firstNameInput" ]];
-		then
+		if [[ "$firstName" == "$firstNameInput" ]]; then
 			printf "Student found! \n"
 			echo "ID: $id, Name: $firstName $middleName $lastName, Address: $address $city $state $zip, Phone Number: $phone, Email: $email"
 			found=1
@@ -44,8 +54,7 @@ do_search() {
 		fi
 	done < "$CONTACT"
 
-	if [[ $found -eq 0 ]];
-	then
+	if [[ $found -eq 0 ]]; then
 		echo "Name not found"
 	fi
 }
@@ -53,11 +62,13 @@ do_search() {
 do_add(){
 	# no duplicate checking implementation since we could have two identical entries separated by id #
 	CONTACT="/$HOME/Downloads/contacts.csv"
+
 	if [ ! -f "$CONTACT" ]; then
-                echo "Error: CSV File '$CONTACT' not found"
-                sleep 1
-                exit 1
-        fi
+		echo "Error: CSV File '$CONTACT' not found"
+		sleep 1
+		exit 1
+    fi
+
 	tmpfile=$(mktemp)
 
 	printf "Please print the school ID of your student:\n"
@@ -85,108 +96,91 @@ do_add(){
 	printf "Please print your student's email: \n"
 	read email
 
-	printf "Created!\n"
-
 	new_record="$id,$firstName,$middleName,$lastName,$address,$city,$state,$zip,$phone,$email\n"
 	echo "$new_record" >> "$tmpfile"
 	tail -n +2 "$CONTACT" >> "$tmpfile"
 	mv "$tmpfile" "$CONTACT"
+
+	printf "Created!\n"
 }
 
 do_edit() {
+    # similar to edit but instead I delete the entire row and ask for a re-input, since edit had no specification in the lab
+	CONTACT="/$HOME/Downloads/contacts.csv"
 
-    CONTACT="/$HOME/Downloads/contacts.csv"
+	if [ ! -f "$CONTACT" ]; then
+		echo "Error: CSV File '$CONTACT' not found"
+		sleep 1
+		exit 1
+	fi
 
-    if [ ! -f "$CONTACT" ]; then
+	printf "\nWhat is the first name of the person you are searching for?\n"
+	read firstNameInput
 
-                echo "Error: CSV File '$CONTACT' not found"
+	found=0
+	linenumber=1
 
-                sleep 1
-
-                exit 1
-
-        fi
-
-    clear
-
-    printf "\nWhat is the first name of the person you are searching for?\n"
-    read firstNameInput
-    found=0
-
-    line=$(awk -F, -v name="$firstNameInput" '$2 == name {print NR}' "$CONTACT")
-	while IFS=, read -r id firstName middleName lastName address city state
+	while IFS=, read -r id firstName middleName lastName address city state zip phone email
 	do
-		if [[ "$firstName" == "$firstNameInput" ]];
-		then
-			printf "Student found!\n"
+		if [[ "$firstName" == "$firstNameInput" ]]; then
+			printf "Student found! \n"
+			echo "ID: $id, Name: $firstName $middleName $lastName, Address: $address $city $state $zip, Phone Number: $phone, Email: $email"
 			found=1
-			printf "What would you like to change about the student?\n"
-			printf "1. ID\n"
-			printf "2. First Name\n"
-			printf "3. Middle Name\n"
-			printf "4. Last Name\n"
-			printf "5. Address\n"
-			printf "6. City\n"
-			printf "7. State\n"
-			printf "8. Zip\n"
-			printf "9. Phone"
-			printf "10. Email"
-			printf "11. Quit"
-			read new_data
-			clear
+			break
+		fi
+		linenumber=$((linenumber + 1))
+	done < "$CONTACT"
 
-			printf "What would you like to change it to be?"
-			read change
-			case $new_data in
-				1)id="$change"
-					;;
-				2)firstName="$change"
-					;;
-				3)middleName="$change"
-					;;
-				4)lastName="$change"
-					;;
-				5)address="$change"
-					;;
-				6)city="$change"
-					;;
-				7)state="$change"
-				;;
-				8)zip="$change"
-					;;
-				9)phone="$change"
-					;;
-				10)email="$change"
-					;;
-				*)break
-					;;
-			esac
-			sed -i "${line}d" "$CONTACT"
-			echo "$id,$firstName,$middleName,$lastName,$address,$city,$state,$zip,$phone,$email" >> "$CONTACT"
-			printf "Updated!\n Please use the list command (1, 1) to see the new changes"
-		fi    
-	done
-	if [[ $found -eq 0 ]]; 
-	then
+	if [[ $found -eq 0 ]]; then
 		echo "Name not found"
+	else
+		temp_file=$(mktemp)
+		line_count=0
+		while IFS='' read -r line; do
+		((line_count++))
+		if [[ $line_count != $line_number_to_delete ]]; then
+			echo "$line" >> "$temp_file"
+		fi
+		done < "$csv_file"
+
+		mv "$temp_file" "$csv_file"
+		do_add
 	fi
 }
 
 
 do_remove() {
 	printf "Searching:\n\n"
-        CONTACT="$HOME/Downloads/contacts.csv"
-        if [ ! -f "$CONTACT" ]; then
-                echo "Error: CSV File '$CONTACT' not found"
-                sleep 1
-                exit 1
-        fi
+	CONTACT="$HOME/Downloads/contacts.csv"
+
+	if [ ! -f "$CONTACT" ]; then
+			echo "Error: CSV File '$CONTACT' not found"
+			sleep 1
+			exit 1
+	fi
+
 	echo -n "Removing File..."
-        rm -f "/$HOME/Downloads/contacts.csv"
+    rm -f "/$HOME/Downloads/contacts.csv"
 	echo -n "File Removed! \nPlease re-instate the .csv file if you plan to continue using this program."
 }
 
+do_sort() {
+	# This isn't required but I did it just for fun :)
+	printf "Sorting:\n\n"
+	CONTACT="$HOME/Downloads/contacts.csv"
 
+	if [ ! -f "$CONTACT" ]; then
+			echo "Error: CSV File '$CONTACT' not found"
+			sleep 1
+			exit 1
+	fi
+
+	touch sorted.csv
+	sort -t ',' -k 1 -n "$CONTACT" > sorted.csv
+	printf "Sorted"
+}
+
+# Main Program
 printf "%s" "-- Address Book --"
 while :
 do
