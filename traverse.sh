@@ -2,15 +2,16 @@ doindent() {
   # Do a small indent depending on how deep into the tree we are
   # using echo "\c" instead of echo en " " since I am using ubuntu
   for i in $(seq 1 "$1"); do
-    echo "\c"
+    echo - en " "
   done
 }
 
 traverse() {
   # Traverse a directory
-  indent="$2" 
+  local indent="$2" #encapsulation
 
-  # Loop through each item in the directory
+  # "Rewrite below... using the for-loop."
+  # Traverse a directory
   for item in "$1"/*; do
     doindent "$indent"
     if [ -d "$item" ]; then
