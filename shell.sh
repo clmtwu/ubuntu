@@ -1,12 +1,15 @@
 #!/bin/bash
 
-# Get the PPID of the current process
-parent_pid=$$
+# "These scripts take advantage of the PPID shell variable, 
+# which holds the PID number of the shell that is the parent process using the variable"
+p_pid=$$
 
-# Use ps to get the command line of the parent process
-parent_cmd=$(ps -p $parent_pid -o cmd=)
+# ps to obtain command line of parent_pid
+# -o cmd+ for only the command line
+cmdline=$(ps -p $p_pid -o cmd=)
 
-# Extract the shell name from the command line
-shell_name=$(echo $parent_cmd | cut -d' ' -f1)
+# "The cut utility interprets multiple sequential SPACES as multiple delimiters..."
+name=$(echo $cmdline | cut -d' ' -f1)
 
-echo "Executing shell: $shell_name"
+# "so the script does not work properly without an echo"
+echo "Executing shell: $name"
